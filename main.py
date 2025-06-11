@@ -36,14 +36,20 @@ for url in urls:
             if "No quiere agencias" in result or "No es particular" in result:
                 print(f"⏩ Saltado: {result} ({url})")
                 continue
+            else:
+                print(f"⚠️ Resultado string no esperado en {url}: {result}")
 
-            if isinstance(result, list):
-                clean_row = [cell if cell.strip() else "N/A" for cell in result]
-                sheet.append_row(clean_row, value_input_option="USER_ENTERED")
-                print(f"✔️ Datos guardados: {url}")
+        elif isinstance(result, list):
+            # Limpiar y validar datos
+            clean_row = [str(cell).strip() if cell and str(cell).strip() else "N/A" for cell in result]
+            
+            # Agregar fila a Google Sheets
+            sheet.append_row(clean_row, value_input_option="USER_ENTERED")
+            print(f"✔️ Datos guardados en nueva fila: {url}")
+            print(f"   Datos: {clean_row[:3]}...")  # Mostrar primeros 3 campos para debug
 
         else:
-            print(f"⚠️ Resultado inesperado en {url}: {result}")
+            print(f"⚠️ Resultado inesperado en {url}: {type(result)} - {result}")
 
     except Exception as e:
         print(f"⚠️ Error en {url}: {e}")
